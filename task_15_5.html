@@ -1,0 +1,45 @@
+<html>
+
+    <body>
+        <input id="input" type="text" style="border: 1px solid blue;width: 200px;">
+        <button id="btn" disabled="disabled">Отправить</button>
+        <button id="location">Геолокация</button>
+        <div id="history" style="border: 1px solid blue;width: 375px;height: 600px;overflow: auto;">  
+        </div>
+    </body>
+	
+    <script>
+	
+        websoket = new WebSocket("wss://echo.websocket.org/")
+        
+        websoket.onopen = function(){
+            console.log("CONNECTED");
+            document.getElementById("btn").disabled = false;
+        };
+        websoket.onmessage = (evt) => {
+            document.getElementById("history").innerHTML +=`<p align="left">${evt.data}</p>`;
+        };
+        websoket.onerror = () => {
+            console.log("ERROR");
+        };
+        websoket.onclose = function(){
+            console.log("DISCONNECTED");
+        };
+
+        const success = (position) => {
+            console.log(position)
+            document.getElementById("history").innerHTML += `<p><a target="_blank" style="text-decoration: none;" href="https://www.openstreetmap.org/#map=16/${position.coords.latitude}/${position.coords.longitude}" align="left">Ваше местоположение</a></p>`;
+        };
+        const error = () => document.getElementById("history").innerHTML +=`<p align="left">Нет доступа к геолокации</p>`;
+
+        btn.addEventListener("click", () => {
+            document.getElementById("history").innerHTML +=`<p align="right">${input.value}</p>`;
+            websoket.send(input.value);
+        });
+
+        document.getElementById("location").addEventListener("click", () => {
+            if(!navigator.geolocation) error();
+            else navigator.geolocation.getCurrentPosition(success, error);
+        });
+    </script>
+</html>

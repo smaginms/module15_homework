@@ -1,0 +1,80 @@
+<html>
+  <body>
+    <button class="btn j-btn-test">
+      Поиск вашей геолокации
+    </button>
+    
+    <p id = "size"></p>
+    <p id = "status"></p>
+    <a id = "map-link" target="_blank"></a>
+  </body>
+  
+  <style>
+    .btn {
+      padding: 0;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: none;
+      cursor: pointer;
+      
+      display: flex;
+      margin: 5px 10px;
+      padding: 10px 15px;
+      border-radius: 1px;
+      font-size: 12px;
+      line-height: 15px;
+      text-transform: uppercase;
+      color: white;
+      background: #315efb;
+      transition: 0.3s;
+    }
+    
+    .btn:hover {
+      box-shadow: 0px 2px 8px 2px rgba(141,150,178,.3);
+      transform: scale(1.05);
+    }
+  </style>
+  
+  
+  <script>
+  
+    const screenSize = document.querySelector('#size');
+    const status = document.querySelector('#status');
+    const mapLink = document.querySelector('#map-link');
+    const btn = document.querySelector('.j-btn-test');
+    
+    // Функция, выводящая текст об ошибке
+    const error = () => {
+      status.textContent = 'Невозможно получить ваше местоположение';
+    }
+    
+    // Функция, срабатывающая при успешном получении геолокации
+    const success = (position) => {
+      console.log('position', position);
+      const latitude  = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      let width = window.screen.width;
+      let height = window.screen.height; 
+      
+      screenSize.textContent = `Ширина экрана: ${width} °, Высота экрана: ${height} °`;
+      status.textContent = `Широта: ${latitude} °, Долгота: ${longitude} °`;
+      mapLink.href = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+      mapLink.textContent = 'Ссылка на карту';
+    }
+    
+    btn.addEventListener('click', () => {
+      mapLink.href = '';
+      mapLink.textContent = '';
+      
+      if (!navigator.geolocation) {
+        status.textContent = 'Geolocation не поддерживается вашим браузером';
+      } else {
+        status.textContent = 'Определение местоположения…';
+        navigator.geolocation.getCurrentPosition(success, error);
+      }
+    });
+    
+  </script>
+</html>
